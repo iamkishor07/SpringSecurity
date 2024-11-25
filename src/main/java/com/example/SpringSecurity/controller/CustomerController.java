@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("api/v1/user")
+@RestController("api/v1/Customer")
 public class CustomerController {
    private CustomerServiceImpl customerServiceimpl;
 

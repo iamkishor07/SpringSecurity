@@ -2,6 +2,7 @@ package com.example.SpringSecurity.service;
 
 import com.example.SpringSecurity.dao.Customer;
 import com.example.SpringSecurity.repositry.CustomerRepositry;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,14 +12,17 @@ import java.util.stream.Collectors;
 public class CustomerServiceImpl implements CustomerService{
 
     private CustomerRepositry customerRepositry;
+    private PasswordEncoder passwordEncoder;
 
-    public CustomerServiceImpl(CustomerRepositry customerRepositry) {
+    public CustomerServiceImpl(CustomerRepositry customerRepositry,PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
         this.customerRepositry = customerRepositry;
     }
 
 
     @Override
     public Customer createCustomer(Customer customer) {
+        customer.setPwd(passwordEncoder.encode(customer.getPwd()));
          return customerRepositry.save(customer);
     }
 
