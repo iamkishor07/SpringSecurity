@@ -4,10 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -25,7 +23,8 @@ public class SecurityConfiguration  {
         * but the get apis will work, if crsf disable all http methods will work*/
 
         http.csrf(crsf ->crsf.disable());
-        http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
+        http.authorizeHttpRequests((requests) ->requests.requestMatchers("/h2-console/**","/api/v1/Customer/signup/**").permitAll().
+                anyRequest().authenticated());
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
         return http.build();
@@ -34,12 +33,24 @@ public class SecurityConfiguration  {
     /*This UserDetailsService is responsible for loading the users
     * either from Inmemory or JDBC by UserDetailsManger with the User class
     * which stores the username,password,authorities,isauthenticated & so,on*/
+
+    /*The below code is commented , since we implemented custom UserDetailsService class*/
+/*
     @Bean
     public UserDetailsService userDetailsService()
     {
         //at the time of object creation
         UserDetails userDetails = User.withUsername("kishor").password("{noop}1234").authorities("read").build();
         return new InMemoryUserDetailsManager(userDetails);
+    }
+*/
+
+    /*The below class constructor is to load a default password encoder
+    * as we are using custom tables & custom Implementaion, we need to provide passwordEncoder*/
+    @Bean
+    public PasswordEncoder PasswordEncoder()
+    {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
 
